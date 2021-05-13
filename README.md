@@ -1,7 +1,7 @@
-Oh, hello there. I am an insurtech nomad & i love dinosaurs
+
 
 	
-	
+	insurtech nomad. i love dinosaurs.
 	
 	
                      __
@@ -17,7 +17,4 @@ Oh, hello there. I am an insurtech nomad & i love dinosaurs
                 \----------/     /
                   //    \\_____/
                  W       W
-
-
-Website=https://mlourdestan.com/
-LinkedIn=https://www.linkedin.com/in/mlourdestan/
+		 
