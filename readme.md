@@ -16,6 +16,4 @@
                   //    \\_____/
                  W       W
 		 
-		 Web=mlourdestan.com
-		 Twitter=@goodlourdt
-		 
+	
