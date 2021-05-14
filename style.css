@@ -25,8 +25,9 @@ body {
  .box h3 {
     font-size: 15px;
     font-weight: 100;
-   font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;
     }
  .box p {
+    font-size: 10px;
     font-family: 'Roboto', sans-serif;
     }
