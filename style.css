@@ -11,7 +11,7 @@ body {
   margin: auto;
   margin-top: 5%;
   color: black;
-  font-family: 'Arial', sans-serif';
+  font-family: 'Roboto', sans-serif;
   }
 .box-img {
   border-radius: 50%;
@@ -21,12 +21,14 @@ body {
     font-size: 30px;
     letter-spacing: 3px;
     font-weight: 100;
+    font-family: 'Roboto', sans-serif;
     }
  .box h3 {
     font-size: 15px;
     letter-spacing: 1px;
     font-weight: 100;
+   font-family: 'Roboto', sans-serif;
     }
  .box p {
-    text-align: center;
+    font-family: 'Roboto', sans-serif;
     }
