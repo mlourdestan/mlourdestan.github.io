@@ -5,11 +5,11 @@ body {
   background-size: cover;
   }
 .box {
-  width: 450px;
-  padding: 40px;
+  width: auto;
+  padding: 100px;
   text-align: center;
   margin: auto;
-  margin-top: 5%;
+  margin-top: 150px;
   color: black;
   font-family: 'Roboto', sans-serif;
   }
