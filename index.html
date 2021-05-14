@@ -11,18 +11,27 @@
 		<meta property="website" content="mlourdestan.com/>
           <!-- remember how to fucking do this! -->
 	<style>
-		.center {
-  		margin: 100px;
-  		width: 100%;
-  		padding: 100px;
+		.container { 
+  		height: 200px;
+  		position: relative;
 		}
-	 </style>
-					  		
+
+		.center {
+ 		 margin: 0;
+  		 position: absolute;
+  		 top: 50%;
+  		 left: 50%;
+  		 -ms-transform: translate(-50%, -50%);
+ 		 transform: translate(-50%, -50%);
+		 }
+</style>			  		
 	<body>
+		<div class="container">
 		<div class="center">
 				   <p> Lourd </p>
 				   <p> Insurance nomad </p>
 		</div>
+	       </div>
 	</body>
         </head>	
 </html>
