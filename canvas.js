@@ -1,114 +1,146 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
+// Little Canvas things
+var canvas = document.querySelector("#canvas"),
+    ctx = canvas.getContext('2d');
 
-const mouse = {
-    x: window.innerWidth / 1,
-    y: window.innerHeight / 1
-}
+// Set Canvas to be window size
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-const colours = [
-    '#2185C5',
-    '#7ECEFD',
-    '#FFF6E5',
-    '#FF7F66'
-]
+// Configuration, Play with these
+var config = {
+  particleNumber: 800,
+  maxParticleSize: 10,
+  maxSpeed: 40,
+  colorVariation: 50
+};
 
-const limit = 30
+// Colors
+var colorPalette = {
+    bg: {r:12,g:9,b:29},
+    matter: [
+      {r:36,g:18,b:42}, // darkPRPL
+      {r:78,g:36,b:42}, // rockDust
+      {r:252,g:178,b:96}, // solorFlare
+      {r:253,g:238,b:152} // totesASun
+    ]
+};
 
-// Event listeners
-window.addEventListener('mousemove', function (event) {
-    mouse.x = event.clientX
-    mouse.y = event.clientY
-})
+// Some Variables hanging out
+var particles = [],
+    centerX = canvas.width / 2,
+    centerY = canvas.height / 2,
+    drawBg,
 
-window.addEventListener('resize', setCanvasDimensions)
+// Draws the background for the canvas, because space
+drawBg = function (ctx, color) {
+    ctx.fillStyle = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+};
 
-window.addEventListener('click', function () {
-    // explode?
-})
+// Particle Constructor
+var Particle = function (x, y) {
+    // X Coordinate
+    this.x = x || Math.round(Math.random() * canvas.width);
+    // Y Coordinate
+    this.y = y || Math.round(Math.random() * canvas.height);
+    // Radius of the space dust
+    this.r = Math.ceil(Math.random() * config.maxParticleSize);
+    // Color of the rock, given some randomness
+    this.c = colorVariation(colorPalette.matter[Math.floor(Math.random() * colorPalette.matter.length)],true );
+    // Speed of which the rock travels
+    this.s = Math.pow(Math.ceil(Math.random() * config.maxSpeed), .7);
+    // Direction the Rock flies
+    this.d = Math.round(Math.random() * 360);
+};
 
-// Utility functions
-function setCanvasDimensions () {
-    canvas.height = window.innerHeight
-    canvas.width = window.innerWidth
-}
-
-function randomIntFromRange (min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-}
-
-function randomColour () {
-    return colours[randomIntFromRange(0, colours.length)]
-}
-
-function Particle ({ x, y, velocity, radius, colour } = {}) {
-    this.x = x 
-    this.y = y 
-    this.velocity = velocity || 0.03
-    this.radius = radius 
-    this.colour = randomColour()
-    this.radians = Math.random() * Math.PI * 2
-    this.distanceFromCenter = randomIntFromRange(50, 120)
-    this.lastMouse = { x: x, y: y }
-    
-    this.update = () => {
-        const lastPoint = {
-            x: this.x,
-            y: this.y
-        }
-        // Move points over time
-        this.radians += this.velocity
-        
-        // Drag effect
-        this.lastMouse.x += (mouse.x - this.lastMouse.x) * 0.05
-        this.lastMouse.y += (mouse.y - this.lastMouse.y) * 0.05
-        
-        // Circular motion
-        this.x = this.lastMouse.x + Math.cos(this.radians) * this.distanceFromCenter
-        this.y = this.lastMouse.y + Math.sin(this.radians) * this.distanceFromCenter
-        this.draw(lastPoint)
+// Provides some nice color variation
+// Accepts an rgba object
+// returns a modified rgba object or a rgba string if true is passed in for argument 2
+var colorVariation = function (color, returnString) {
+    var r,g,b,a, variation;
+    r = Math.round(((Math.random() * config.colorVariation) - (config.colorVariation/2)) + color.r);
+    g = Math.round(((Math.random() * config.colorVariation) - (config.colorVariation/2)) + color.g);
+    b = Math.round(((Math.random() * config.colorVariation) - (config.colorVariation/2)) + color.b);
+    a = Math.random() + .5;
+    if (returnString) {
+        return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+    } else {
+        return {r,g,b,a};
     }
-    
-    this.draw = (lastPoint) => {
-        c.beginPath()
-        c.strokeStyle = this.colour
-        c.lineWidth = this.radius
-        c.moveTo(lastPoint.x, lastPoint.y)
-        c.lineTo(this.x, this.y)
-        c.stroke()
-        c.closePath()
+};
+
+// Used to find the rocks next point in space, accounting for speed and direction
+var updateParticleModel = function (p) {
+    var a = 180 - (p.d + 90); // find the 3rd angle
+    p.d > 0 && p.d < 180 ? p.x += p.s * Math.sin(p.d) / Math.sin(p.s) : p.x -= p.s * Math.sin(p.d) / Math.sin(p.s);
+    p.d > 90 && p.d < 270 ? p.y += p.s * Math.sin(a) / Math.sin(p.s) : p.y -= p.s * Math.sin(a) / Math.sin(p.s);
+    return p;
+};
+
+// Just the function that physically draws the particles
+// Physically? sure why not, physically.
+var drawParticle = function (x, y, r, c) {
+    ctx.beginPath();
+    ctx.fillStyle = c;
+    ctx.arc(x, y, r, 0, 2*Math.PI, false);
+    ctx.fill();
+    ctx.closePath();
+};
+
+// Remove particles that aren't on the canvas
+var cleanUpArray = function () {
+    particles = particles.filter((p) => { 
+      return (p.x > -100 && p.y > -100); 
+    });
+};
+
+
+var initParticles = function (numParticles, x, y) {
+    for (let i = 0; i < numParticles; i++) {
+        particles.push(new Particle(x, y));
     }
-}
+    particles.forEach((p) => {
+        drawParticle(p.x, p.y, p.r, p.c);
+    });
+};
 
-// Animation loop
-let particles = []
+// That thing
+window.requestAnimFrame = (function() {
+  return window.requestAnimationFrame ||
+     window.webkitRequestAnimationFrame ||
+     window.mozRequestAnimationFrame ||
+     function(callback) {
+        window.setTimeout(callback, 1000 / 60);
+     };
+})();
 
-function animate () {
-    requestAnimationFrame(animate)
-    c.fillStyle = 'rgba(255, 255, 255, 0.2)'
-    c.fillRect(0, 0, canvas.width, canvas.height)
-    particles.forEach(particle => {
-        particle.update()
-    })
-}
 
-// Implementation
-function init () {
-    setCanvasDimensions()
-    
-    particles = []
-    
-    for(let i = 0; i < limit; i++) {
-        const particle = new Particle({
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            radius: (Math.random() * 2) + 1
-        })
-        
-        particles.push(particle)
-    }
-    
-    animate()
-}
+// Our Frame function
+var frame = function () {
+  // Draw background first
+  drawBg(ctx, colorPalette.bg);
+  // Update Particle models to new position
+  particles.map((p) => {
+    return updateParticleModel(p);
+  });
+  // Draw em'
+  particles.forEach((p) => {
+      drawParticle(p.x, p.y, p.r, p.c);
+  });
+  // Play the same song? Ok!
+  window.requestAnimFrame(frame);
+};
 
-init()
+// Click listener
+document.body.addEventListener("click", function (event) {
+    var x = event.clientX,
+        y = event.clientY;
+    cleanUpArray();
+    initParticles(config.particleNumber, x, y);
+});
+
+// First Frame
+frame();
+
+// First particle explosion
+initParticles(config.particleNumber);
