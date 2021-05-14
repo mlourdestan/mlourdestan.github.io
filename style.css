@@ -6,7 +6,7 @@ body {
   }
 .box {
   width: auto;
-  padding: 100px;
+  padding: auto;
   text-align: center;
   margin: auto;
   margin-top: 150px;
