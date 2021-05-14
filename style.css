@@ -4,6 +4,8 @@ body {
   background: white;
   background-size: cover;
   }
+.canvas {
+  border: 1px soild black;
 .box {
   width: auto;
   padding: auto;
